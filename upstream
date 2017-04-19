@@ -1,0 +1,46 @@
+ upstream tomcat2.cn {
+              server 192.168.1.75:8080;
+        }
+
+server {
+        listen       80;
+        server_name test.lifebook.xin;
+        charset utf-8;
+        #charset koi8-r;
+
+#        access_log  logs/host.access.log  ;
+         access_log  /usr/local/nginx/logs/tomcat2.log;
+
+        location / {
+
+                root    /data/reborndata_www/static/;
+                index  index.html index.htm index.jsp;
+                proxy_pass   http://tomcat2.cn;
+                proxy_redirect off;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                client_max_body_size 1000m;
+        }
+        
+        location ~ ^/static/ {
+                root /data/reborndata_www/;
+                expires 30d;
+                access_log off;
+        }
+
+        location ~ .*\.(gif|jpg|jpeg|png|bmp|swf|js|css|ico)$ {
+                proxy_pass   http://tomcat2.cn;
+                expires      30d;
+                access_log off;
+        }
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+
+        location = /50x.html {
+                 root   html;
+             }
+        }
